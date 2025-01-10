@@ -10,6 +10,7 @@
     "deploy": "npm run build && wrangler pages deploy ./dist"
   },
   "dependencies": {
+    "firebase": "^11.1.0",
     "pinia": "^2.3.0",
     "vue": "^3.5.13",
     "vue-cli": "^2.9.6",

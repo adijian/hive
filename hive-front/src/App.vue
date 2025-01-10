@@ -1,85 +1,114 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it! testt" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+  <div class="login-container">
+    <div v-if="isLoggedIn" class="welcome">
+      <h2>Welcome, {{ username }}!</h2>
+      <button @click="logout" class="logout-btn">Logout</button>
     </div>
-  </header>
 
-  <RouterView />
+    <div v-else class="login-form">
+      <h2>Login</h2>
+      <form @submit.prevent="handleLogin">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="username" id="username" v-model="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="password" required>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+
+    <p v-if="firstUsername && !isLoggedIn" class="info-text">First Username: {{ firstUsername }}</p>
+    <p v-else-if="!isLoggedIn" class="info-text">No users found.</p>
+  </div>
 </template>
 
+<script>
+import { db } from '@/firebase'
+import { getDocs, collection } from 'firebase/firestore'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+      isLoggedIn: false,
+      firstUsername: null,
+    };
+  },
+  async mounted() {
+    // Fetch first username (optional)
+    const querySnapshot = await getDocs(collection(db, 'users'));
+    if (!querySnapshot.empty) {
+      this.firstUsername = querySnapshot.docs[0].data(); // Assuming 'username' field exists
+    }
+  },
+  methods: {
+    async handleLogin() {
+      try {
+        this.isLoggedIn = true;
+        this.username = user.email; // Assuming email is used as username
+
+        this.email = '';
+        this.password = '';
+      } catch (error) {
+        console.error('Login error:', error);
+      }
+    },
+    logout() {
+        this.isLoggedIn = false;
+        this.username = null;
+    },
+  },
+};
+</script>
+
+
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #181818; /* Dark background */
+  color: #fff; /* White text */
 }
 
-.logo {
+.welcome,
+.login-form {
+  background-color: #282828; /* Darker background for boxes */
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
   display: block;
-  margin: 0 auto 2rem;
+  margin-bottom: 5px;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.login-btn,
+.logout-btn {
+  background-color: #007bff; /* Keep button color for contrast */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.info-text {
+  margin-top: 20px;
+  color: #999; /* Lighter gray text */
 }
 </style>
