@@ -24,7 +24,7 @@
 
     <button @click="moveToSignUp" class="hive-button spacing-top"> Sign up</button>
 
-    <p v-if="fetchedDbUserData && !isLoggedIn" class="hive-info-text spacing-top">First Username: {{ fetchedDbUserData }}</p>
+    <p v-if="fetchedDbUserData && !isLoggedIn" class="hive-info-text spacing-top">Username from Database: {{ fetchedDbUserData }}</p>
     <p v-else-if="!isLoggedIn" class="hive-info-text spacing-top">No users found.</p>
   </div>
 </template>
