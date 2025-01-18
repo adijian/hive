@@ -7,12 +7,49 @@
   font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+.hive-button {
+  background-color: var(--hive-highlight);
+  color: var(--hive-background-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.hive-button:hover {
+  background-color: var(--hive-highlight-darker);
+  color: var(--hive-white)
+}
+
+.hive-label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--hive-highlight);
+}
+
+.hive-info-text {
+  color: var(--hive-white);
+}
+
+.hive-input {
+  margin-bottom: 15px;
+}
+
+.hive-form {
+  background-color: var(--hive-background-color-lighter);
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: var(--hive-boxshadow); 
+}
+
+.hive-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--hive-background-color);
+  color: var(--hive-white);
 }
 
 @media (hover: hover) {

@@ -1,114 +1,82 @@
 <template>
-  <div class="login-container">
-    <div v-if="isLoggedIn" class="welcome">
+  <div class="hive-container">
+    <div v-if="isLoggedIn" class="hive-form">
       <h2>Welcome, {{ username }}!</h2>
-      <button @click="logout" class="logout-btn">Logout</button>
+      <button @click="logout" class="hive-button">Logout</button>
     </div>
 
-    <div v-else class="login-form">
+    <div v-else class="hive-form">
       <h2>Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="username">Username:</label>
-          <input type="username" id="username" v-model="username" required>
+          <label for="email" class="hive-label">Email:</label>
+          <input type="email" id="email" v-model="email" class="hive-input" required>
         </div>
 
         <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" v-model="password" required>
+          <label for="password" class="hive-label">Password:</label>
+          <input type="password" id="password" v-model="password" class="hive-input" required>
         </div>
 
-        <button type="submit" class="login-btn">Login</button>
+        <button type="submit" class="hive-button">Login</button>
       </form>
     </div>
 
-    <p v-if="firstUsername && !isLoggedIn" class="info-text">First Username: {{ firstUsername }}</p>
-    <p v-else-if="!isLoggedIn" class="info-text">No users found.</p>
+    <button @click="moveToSignUp" class="hive-button spacing-top"> Sign up</button>
+
+    <p v-if="fetchedDbUserData && !isLoggedIn" class="hive-info-text spacing-top">First Username: {{ fetchedDbUserData }}</p>
+    <p v-else-if="!isLoggedIn" class="hive-info-text spacing-top">No users found.</p>
   </div>
 </template>
 
 <script>
 import { db } from '@/firebase'
 import { getDocs, collection } from 'firebase/firestore'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import SignUp from './components/SignUp.vue';
 
 export default {
+  components: {
+    SignUp,
+  },
   data() {
     return {
-      username: '',
-      password: '',
+      email: undefined,
+      password: undefined,
       isLoggedIn: false,
-      firstUsername: null,
+      fetchedDbUserData: null,
     };
   },
   async mounted() {
-    // Fetch first username (optional)
     const querySnapshot = await getDocs(collection(db, 'users'));
     if (!querySnapshot.empty) {
-      this.firstUsername = querySnapshot.docs[0].data(); // Assuming 'username' field exists
+      this.fetchedDbUserData = querySnapshot.docs[0].data();
     }
   },
   methods: {
+    moveToSignUp() {
+      this.$router.push({ name: 'signup' });
+    },
     async handleLogin() {
       try {
         this.isLoggedIn = true;
-        this.username = user.email; // Assuming email is used as username
+        this.email = user.email;
 
-        this.email = '';
-        this.password = '';
+        this.email = undefined;
+        this.password = undefined;
       } catch (error) {
         console.error('Login error:', error);
       }
     },
     logout() {
         this.isLoggedIn = false;
-        this.username = null;
+        this.email = null;
     },
   },
 };
 </script>
 
-
 <style scoped>
-.login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #181818; /* Dark background */
-  color: #fff; /* White text */
-}
-
-.welcome,
-.login-form {
-  background-color: #282828; /* Darker background for boxes */
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.login-btn,
-.logout-btn {
-  background-color: #007bff; /* Keep button color for contrast */
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.info-text {
-  margin-top: 20px;
-  color: #999; /* Lighter gray text */
-}
+  .spacing-top {
+    margin-top: 15px;
+  }
 </style>

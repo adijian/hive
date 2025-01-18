@@ -19,6 +19,15 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  /*Hive*/
+  /* var(--primary-color) */
+  --hive-white: #fff;
+  --hive-background-color: #181818;
+  --hive-background-color-lighter: #282828;
+  --hive-highlight: #f1c40f;
+  --hive-highlight-darker: #d4ac0d;
+  --hive-boxshadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* semantic color variables for this project */
