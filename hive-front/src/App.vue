@@ -22,7 +22,8 @@
         </div>
 
         <div class="buttons-container">
-          <button type="submit" class="hive-button" @click="register">Login</button>
+          <button type="submit" class="hive-button" @click="login">Login</button>
+          <button type="submit" class="hive-button spacing-top" @click="register">Register</button>
           <button type="submit" class="hive-button spacing-top" @click="signInWithGoogle">Sign In With Google</button>
         </div>
       </form>
@@ -36,7 +37,7 @@
 <script>
 import { db } from '@/firebase'
 import { getDocs, collection } from 'firebase/firestore'
-import { getAuth, createUserWithEmailAndPassword, signOut, deleteUser, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signOut, deleteUser, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 
 export default {
   data() {
@@ -56,8 +57,7 @@ export default {
   },
   computed: {
       isAdmin() {
-          console.log(this.username)
-          if (this.username == "Adi Jian") {
+          if (this.username == "Adi Jian" || this.username == "adijian123@gmail.com") {
               return true
           }
           return false
@@ -65,20 +65,22 @@ export default {
   },
   methods: {
     register() {
-          console.log(this.email, this.password)
-          createUserWithEmailAndPassword(getAuth(), this.email, this.password)
-              .then((data) => {
-                  console.log("Success", data);
-                  // router.push("")
-              })
-              .catch((error) => {
-                  console.error(error)
-                  alert(error.message)
-              })
+        if (this.email == undefined && this.username == undefined){
+          return
+        }
+        createUserWithEmailAndPassword(getAuth(), this.email, this.password)
+            .then((data) => {
+                console.log("Success", data);
+                this.username = this.email
+                this.isLoggedIn = true
+            })
+            .catch((error) => {
+                console.error(error)
+                alert(error.message)
+            })
     },
     async signInWithGoogle() {
         const provider = new GoogleAuthProvider()
-        
         await signInWithPopup(getAuth(), provider)
             .then((result) => {
                 this.isLoggedIn = true
@@ -102,7 +104,26 @@ export default {
           })
         }
 
-        this.isLoggedIn = false;
+        this.logout()
+    },
+    logout() {
+      this.username = undefined;
+      this.isLoggedIn = false
+    },
+    login() {
+      if (this.email == undefined && this.username == undefined){
+          return
+        }
+        signInWithEmailAndPassword(getAuth(), this.email, this.password)
+            .then((data) => {
+                console.log("Success", data);
+                this.username = this.email
+                this.isLoggedIn = true
+            })
+            .catch((error) => {
+                console.error(error)
+                alert(error.message)
+            })
     },
     removeUser() {
         const auth = getAuth();
@@ -114,6 +135,7 @@ export default {
             .catch((error) => {
                 console.error("Error deleting user:", error);
         });
+        this.signOut()
     }
   },
 };
