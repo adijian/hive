@@ -4,6 +4,7 @@
       <h2>Welcome, {{ username }}!</h2>
       <div class="buttons-container">
         <button class="hive-button spacing-top" @click="signOut">Logout</button>
+        <button class="hive-button spacing-top feed-button-size" @click="moveToFeed">Move to Feed</button>
         <button v-if="isAdmin" type="submit" class="hive-button spacing-top" @click="removeUser">Debug: Remove User</button>
       </div>
     </div>
@@ -147,6 +148,9 @@ export default {
       this.isLoggedIn = false
       Cookies.remove("username")
     },
+    moveToFeed() {
+      this.$router.push('/feed')
+    }
   },
 };
 </script>
@@ -160,5 +164,9 @@ export default {
   }
   .spacing-top {
     margin-top: 15px;
+  }
+  .feed-button-size {
+    padding-top: 30px;
+    padding-bottom: 30px;
   }
 </style>
