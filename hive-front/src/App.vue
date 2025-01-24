@@ -66,7 +66,7 @@ export default {
       const usern = getAuth()
       try {
         const result = await getRedirectResult(usern);
-        alert("RESULT", result)
+        alert("RESULT", result == null)
         if (result) {
           console.log('User signed in:', result);
           this.loginCookie(result.user.displayName)
