@@ -2,8 +2,6 @@ import axios from 'axios';
 
 const baseURL = `${window.location.protocol}//${window.location.host}`;
 
-//console.log(baseURL)
-
 const instance = axios.create({
   baseURL: baseURL,
   timeout: 1000,

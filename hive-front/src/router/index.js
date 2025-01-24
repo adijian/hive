@@ -21,6 +21,10 @@ const router = createRouter({
       name: 'test',      
       component: TestPage,
     },
+    {
+      path: '/__/auth/handler', 
+      redirect: '/' 
+    },
   ],
 })
 
