@@ -89,7 +89,7 @@
     },
     async mounted() {
       const cookie = Cookies.get('username')
-      if (!cookie) {
+      if (cookie == null) {
         this.$router.push('/')
       }
     },
