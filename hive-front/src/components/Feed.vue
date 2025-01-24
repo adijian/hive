@@ -75,7 +75,8 @@
   
   <script>
   import ShareNetwork from './ShareNetwork.vue';
-
+  import Cookies from 'js-cookie'
+  
   export default {
     components: {
       ShareNetwork
@@ -84,6 +85,12 @@
       title: {
         type: String,
         default: 'Social Feed'
+      }
+    },
+    async mounted() {
+      const cookie = Cookies.get('username')
+      if (!cookie) {
+        this.$router.push('/')
       }
     },
     data() {
