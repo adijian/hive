@@ -2,48 +2,50 @@
   <div class="hive-container">
     <div v-if="isLoggedIn" class="hive-form">
       <h2>Welcome, {{ username }}!</h2>
-      <button @click="logout" class="hive-button">Logout</button>
+      <div class="buttons-container">
+        <button class="hive-button spacing-top" @click="signOut">Logout</button>
+        <button v-if="isAdmin" type="submit" class="hive-button spacing-top" @click="removeUser">Debug: Remove User</button>
+      </div>
     </div>
 
     <div v-else class="hive-form">
-      <h2>Login</h2>
+      <h1>Bzzz!</h1>
       <form @submit.prevent="handleLogin">
-        <div class="form-group">
+        <div class="form-group spacing-top">
           <label for="email" class="hive-label">Email:</label>
-          <input type="email" id="email" v-model="email" class="hive-input" required>
+          <input type="email" id="email" v-model="email" class="hive-input">
         </div>
 
         <div class="form-group">
           <label for="password" class="hive-label">Password:</label>
-          <input type="password" id="password" v-model="password" class="hive-input" required>
+          <input type="password" id="password" v-model="password" class="hive-input">
         </div>
 
-        <button type="submit" class="hive-button">Login</button>
+        <div class="buttons-container">
+          <button type="submit" class="hive-button" @click="register">Login</button>
+          <button type="submit" class="hive-button spacing-top" @click="signInWithGoogle">Sign In With Google</button>
+        </div>
       </form>
     </div>
 
-    <button @click="moveToSignUp" class="hive-button spacing-top"> Sign up</button>
-
-    <p v-if="fetchedDbUserData && !isLoggedIn" class="hive-info-text spacing-top">Username from Database: {{ fetchedDbUserData }}</p>
-    <p v-else-if="!isLoggedIn" class="hive-info-text spacing-top">No users found.</p>
+    <p v-if="isAdmin" class="hive-info-text spacing-top">Username from Database: {{ fetchedDbUserData }}</p>
+    <p v-else-if="isAdmin" class="hive-info-text spacing-top">No users found.</p>
   </div>
 </template>
 
 <script>
 import { db } from '@/firebase'
 import { getDocs, collection } from 'firebase/firestore'
-import SignUp from './components/SignUp.vue';
+import { getAuth, createUserWithEmailAndPassword, signOut, deleteUser, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export default {
-  components: {
-    SignUp,
-  },
   data() {
     return {
       email: undefined,
       password: undefined,
       isLoggedIn: false,
       fetchedDbUserData: null,
+      username: undefined
     };
   },
   async mounted() {
@@ -52,30 +54,78 @@ export default {
       this.fetchedDbUserData = querySnapshot.docs[0].data();
     }
   },
-  methods: {
-    moveToSignUp() {
-      this.$router.push({ name: 'signup' });
-    },
-    async handleLogin() {
-      try {
-        this.isLoggedIn = true;
-        this.email = user.email;
-
-        this.email = undefined;
-        this.password = undefined;
-      } catch (error) {
-        console.error('Login error:', error);
+  computed: {
+      isAdmin() {
+          console.log(this.username)
+          if (this.username == "Adi Jian") {
+              return true
+          }
+          return false
       }
+  },
+  methods: {
+    register() {
+          console.log(this.email, this.password)
+          createUserWithEmailAndPassword(getAuth(), this.email, this.password)
+              .then((data) => {
+                  console.log("Success", data);
+                  // router.push("")
+              })
+              .catch((error) => {
+                  console.error(error)
+                  alert(error.message)
+              })
     },
-    logout() {
+    async signInWithGoogle() {
+        const provider = new GoogleAuthProvider()
+        
+        await signInWithPopup(getAuth(), provider)
+            .then((result) => {
+                this.isLoggedIn = true
+                this.username = getAuth().currentUser.displayName
+                // router.push()
+            })
+            .catch((error) => {
+                console.error(error)
+                alert(error.message)
+            })
+    },
+    signOut() {
+        const auth = getAuth()
+        if (auth) {
+          signOut(auth).then((data) => {
+              console.log("Successfully signed out", data)
+          })
+          .catch((error) => {
+              console.error(error)
+              alert(error.message)
+          })
+        }
+
         this.isLoggedIn = false;
-        this.email = null;
     },
+    removeUser() {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        deleteUser(user)
+            .then(() => {
+                console.log("User deleted successfully");
+            })
+            .catch((error) => {
+                console.error("Error deleting user:", error);
+        });
+    }
   },
 };
 </script>
 
 <style scoped>
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
   .spacing-top {
     margin-top: 15px;
   }
