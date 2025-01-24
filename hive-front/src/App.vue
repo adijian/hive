@@ -61,12 +61,21 @@ export default {
       this.loginCookie(userm)
     }
 
-    if (this.isLocalhost) {
+    console.log("RESULT")
+    if (this.isMobile) {
       const usern = getAuth()
-      if (usern.currentUser != null) {
-        this.loginCookie(usern.currentUser.displayName)
+      try {
+        const result = await getRedirectResult(usern);
+        alert("RESULT", result)
+        if (result) {
+          console.log('User signed in:', result);
+          // this.loginCookie(result.currentUser.displayName)
+        }
+      } catch (error) {
+        console.error('Error during sign-in:', error);
       }
     }
+    console.log("RESULT")
 
     const querySnapshot = await getDocs(collection(db, 'users'));
     if (!querySnapshot.empty) {
