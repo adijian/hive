@@ -69,7 +69,7 @@ export default {
         alert("RESULT", result)
         if (result) {
           console.log('User signed in:', result);
-          // this.loginCookie(result.currentUser.displayName)
+          this.loginCookie(result.user.displayName)
         }
       } catch (error) {
         console.error('Error during sign-in:', error);
