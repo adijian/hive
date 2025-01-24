@@ -47,13 +47,25 @@ export default {
       password: undefined,
       isLoggedIn: false,
       fetchedDbUserData: null,
-      username: undefined
+      username: undefined,
+      isMobile: false,
+      isLocalhost: false
     };
   },
   async mounted() {
+    this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    this.isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
     const userm = this.getCookieUsername();
     if (userm != null) {
       this.loginCookie(userm)
+    }
+
+    if (this.isLocalhost) {
+      const usern = getAuth()
+      if (usern.currentUser != null) {
+        this.loginCookie(usern.currentUser.displayName)
+      }
     }
 
     const querySnapshot = await getDocs(collection(db, 'users'));
@@ -87,15 +99,9 @@ export default {
     },
     async signInWithGoogle() {
       const auth = getAuth();
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
       try {
-          // if (isLocalhost) {
-          //     const result = await signInWithPopup(auth, google);
-          //     this.username = result.currentUser.displayName;
-          // } 
-          if (isMobile) {
+          if (this.isMobile) {
               const result = await signInWithRedirect(auth, google);
               this.username = result.currentUser.displayName;
           } 
