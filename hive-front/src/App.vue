@@ -38,6 +38,7 @@
 import { db } from '@/firebase'
 import { getDocs, collection } from 'firebase/firestore'
 import { getAuth, createUserWithEmailAndPassword, signOut, deleteUser, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import Cookies from 'js-cookie'
 
 export default {
   data() {
@@ -50,6 +51,11 @@ export default {
     };
   },
   async mounted() {
+    const cookie = Cookies.get('username')
+    if (cookie) {
+      this.loginCookie(cookie)
+    }
+
     const querySnapshot = await getDocs(collection(db, 'users'));
     if (!querySnapshot.empty) {
       this.fetchedDbUserData = querySnapshot.docs[0].data();
@@ -71,8 +77,7 @@ export default {
         createUserWithEmailAndPassword(getAuth(), this.email, this.password)
             .then((data) => {
                 console.log("Success", data);
-                this.username = this.email
-                this.isLoggedIn = true
+                this.loginCookie(this.email)
             })
             .catch((error) => {
                 console.error(error)
@@ -83,14 +88,43 @@ export default {
         const provider = new GoogleAuthProvider()
         await signInWithPopup(getAuth(), provider)
             .then((result) => {
-                this.isLoggedIn = true
-                this.username = getAuth().currentUser.displayName
-                // router.push()
+                this.loginCookie(getAuth().currentUser.displayName)
             })
             .catch((error) => {
                 console.error(error)
                 alert(error.message)
             })
+    },
+    login() {
+      if (this.email == undefined && this.username == undefined){
+          return
+        }
+        signInWithEmailAndPassword(getAuth(), this.email, this.password)
+            .then((data) => {
+                console.log("Success log in", data);
+                this.loginCookie(this.email)
+            })
+            .catch((error) => {
+                console.error(error)
+                alert(error.message)
+            })
+    },
+    loginCookie(username) {
+      Cookies.set('username', username)
+      this.isLoggedIn = true
+      this.username = username
+    },
+    removeUser() {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        deleteUser(user)
+            .then(() => {
+                console.log("User deleted successfully");
+            })
+            .catch((error) => {
+                console.error("Error deleting user:", error);
+        });
+        this.signOut()
     },
     signOut() {
         const auth = getAuth()
@@ -107,36 +141,12 @@ export default {
         this.logout()
     },
     logout() {
-      this.username = undefined;
+      this.username = undefined
+      this.password = undefined
+      this.email = undefined
       this.isLoggedIn = false
+      Cookies.remove("username")
     },
-    login() {
-      if (this.email == undefined && this.username == undefined){
-          return
-        }
-        signInWithEmailAndPassword(getAuth(), this.email, this.password)
-            .then((data) => {
-                console.log("Success", data);
-                this.username = this.email
-                this.isLoggedIn = true
-            })
-            .catch((error) => {
-                console.error(error)
-                alert(error.message)
-            })
-    },
-    removeUser() {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        deleteUser(user)
-            .then(() => {
-                console.log("User deleted successfully");
-            })
-            .catch((error) => {
-                console.error("Error deleting user:", error);
-        });
-        this.signOut()
-    }
   },
 };
 </script>
