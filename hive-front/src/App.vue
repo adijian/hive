@@ -110,7 +110,7 @@ export default {
             })
     },
     loginCookie(username) {
-      Cookies.set('username', username)
+      Cookies.set('username', username, { expires: 1, secure: true, sameSite: 'Lax'})
       this.isLoggedIn = true
       this.username = username
     },
