@@ -38,7 +38,7 @@
 .hive-form {
   background-color: var(--hive-background-color-lighter);
   border-radius: 5px;
-  padding: 20px;
+  padding: 50px;
   box-shadow: var(--hive-boxshadow); 
 }
 
