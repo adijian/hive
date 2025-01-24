@@ -66,17 +66,17 @@ export default {
       const usern = getAuth()
       try {
         const result = await getRedirectResult(usern);
-        alert("RESULT", result == null)
+        alert(`RESULT" + ${result == null}`)
         if (result) {
           console.log('User signed in:', result);
           this.loginCookie(result.user.displayName)
+          alert(`RESULT2" + ${result == null}`)
         }
       } catch (error) {
         console.error('Error during sign-in:', error);
       }
     }
-    console.log("RESULT")
-
+    
     const querySnapshot = await getDocs(collection(db, 'users'));
     if (!querySnapshot.empty) {
       this.fetchedDbUserData = querySnapshot.docs[0].data();
