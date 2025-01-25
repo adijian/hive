@@ -75,8 +75,8 @@
   
   <script>
   import ShareNetwork from './ShareNetwork.vue';
-  import Cookies from 'js-cookie'
-  
+  import { auth } from '@/firebase'
+
   export default {
     components: {
       ShareNetwork
@@ -88,10 +88,12 @@
       }
     },
     async mounted() {
-      const cookie = Cookies.get('username')
-      if (cookie == null) {
-        this.$router.push('/')
-      }
+      auth.onAuthStateChanged((user) => {
+          if (!user) {
+            alert("User not logged in, signing out")
+            this.$router.push('/')
+          }
+      })
     },
     data() {
       return {

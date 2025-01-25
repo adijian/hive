@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore'; 
-import { GoogleAuthProvider } from 'firebase/auth';
+import { GoogleAuthProvider, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAl6vV3vux2Vwo791wTkFUhJsLLsBIK5gA",
@@ -16,5 +16,14 @@ const dbApp = initializeApp(firebaseConfig)
 
 const db = getFirestore(dbApp)
 const google = new GoogleAuthProvider();
+const auth = getAuth(dbApp);
 
-export { db, google }
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log("Auth persistence set to local storage (IndexedDB)");
+  })
+  .catch((error) => {
+    console.error("Error setting auth persistence:", error);
+  });
+
+export { db, google, auth }
